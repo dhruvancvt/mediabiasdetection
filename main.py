@@ -8,7 +8,7 @@ from sklearn.metrics import classification_report
 from transformers import pipeline
 
 # Load Dataset
-data = pd.read_csv("dataset.csv")
+data = pd.read_csv("/Users/dhruvanavinchander1/Desktop/mediabiasdetection/news_bias_dataset.csv")
 texts = data['text']
 labels = data['bias']
 
