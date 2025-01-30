@@ -44,7 +44,7 @@ confusion_matrix = metrics.confusion_matrix(y_test, y_pred)
 
 # Sentiment Analysis Pipeline
 sentiment_pipeline = pipeline("sentiment-analysis")
-example_text = "man i feel really happy today!"
+example_text = "its a glorious day"
 sentiment_result = sentiment_pipeline(example_text)
 print(sentiment_result)
 
