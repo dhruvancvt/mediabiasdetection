@@ -13,6 +13,18 @@ news_sources = {
     "https://www.npr.org/sections/news/": "center"
 }
 
+# Define regex patterns for identifying news articles (adjust for different sites)
+ARTICLE_PATTERNS = [
+    r"/\d{4}/\d{2}/\d{2}/",  # Matches URLs containing YYYY/MM/DD (common news format)
+    r"/article/",  # Matches URLs with "article" in them
+    r"/story/",  # Matches URLs with "story"
+    r"/news/",  # Matches URLs under a /news/ section
+]
+
+# Function to check if a URL looks like a news article
+def is_article_url(url):
+    return any(re.search(pattern, url) for pattern in ARTICLE_PATTERNS)
+
 # Function to extract article links from a news site
 def get_article_links(base_url):
     try:
@@ -27,8 +39,7 @@ def get_article_links(base_url):
         for a in soup.find_all("a", href=True):
             full_url = urljoin(base_url, a["href"])  # Ensure absolute URL
             
-            # Check for date-like patterns (YYYY/MM/DD)
-            if re.search(r"/\d{4}/\d{2}/\d{2}/", full_url):
+            if is_article_url(full_url):  # Filter using regex patterns
                 links.add(full_url)
 
         return list(links)[:5]  # Limit to first 5 articles
@@ -42,7 +53,13 @@ def extract_article_content(url):
         article = Article(url)
         article.download()
         article.parse()
-        return article.text
+        
+        # Ensure valid content (skip short articles)
+        if len(article.text) > 200:  
+            return article.text
+        else:
+            print(f"Skipped short content: {url}")
+            return None
     except Exception as e:
         print(f"Error extracting {url}: {e}")
         return None
