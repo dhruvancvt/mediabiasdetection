@@ -44,7 +44,7 @@ confusion_matrix = metrics.confusion_matrix(y_test, y_pred)
 
 # Sentiment Analysis Pipeline
 sentiment_pipeline = pipeline("sentiment-analysis")
-example_text = "This is a sample news article."
+example_text = "man i feel really happy today!"
 sentiment_result = sentiment_pipeline(example_text)
 print(sentiment_result)
 
@@ -57,7 +57,7 @@ def predict_bias(text):
     return {"bias": bias_label[0], "sentiment": sentiment}
 
 # Example Usage
-sample = "Former President Bill Clinton said Wednesday that President-elect Donald Trump had won the 2024 race fair and square, in contrast to what he still feels was an illegitimate result in 2016.This time, Donald Trump won the race, fair and square, Clinton told The View, adding, I think.In an appearance on the ABC talk show, the ex-president was reminded by co-host Joy Behar that he wrote in his memoir he was so outraged over his wife Hillary Clintons loss in 2016 that he couldnt sleep."
+sample = "Overall, when respondents are asked what outlet they turn to most often for news about government and politics, the most frequent mentions are two cable networks: CNN (named by 16%) and Fox News (14%). But wide ideological differences exist both in the sources that top the list for those on the left and right and in the degree to which there is reliance on a single source. Those with consistently conservative political values are oriented around a single outlet—Fox News—to a much greater degree than those in any other ideological group: Nearly half (47%) of those who are consistently conservative name Fox News as their main source for government and political news. Far fewer choose any other single source: Local radio ranks second, named by 11%, with no other individual source named by more than 5% of consistent conservatives. Those with mostly conservative views also gravitate strongly toward Fox News – 31% name it as their main source, several times the share who name the next most popular sources, including CNN (9%), local television (6%) and radio (6%) and Yahoo News (6%)."
 result = predict_bias(sample)
 print(result)
 
