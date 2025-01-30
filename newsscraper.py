@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 from newspaper import Article
 import pandas as pd
 import time
+from urllib.parse import urljoin
+import re
 
 # Define news sources and their biases
 news_sources = {
@@ -12,20 +14,26 @@ news_sources = {
 }
 
 # Function to extract article links from a news site
-def get_article_links(url):
+def get_article_links(base_url):
     try:
-        response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+        response = requests.get(base_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+        if response.status_code != 200:
+            print(f"Failed to retrieve {base_url}, status code: {response.status_code}")
+            return []
+        
         soup = BeautifulSoup(response.text, "html.parser")
-        links = []
+        links = set()
+
         for a in soup.find_all("a", href=True):
-            full_url = a["href"]
-            if full_url.startswith("/"):  
-                full_url = url.rstrip("/") + full_url
-            if "http" in full_url and "202" in full_url:
-                links.append(full_url)
-        return list(set(links))[:5]  
+            full_url = urljoin(base_url, a["href"])  # Ensure absolute URL
+            
+            # Check for date-like patterns (YYYY/MM/DD)
+            if re.search(r"/\d{4}/\d{2}/\d{2}/", full_url):
+                links.add(full_url)
+
+        return list(links)[:5]  # Limit to first 5 articles
     except Exception as e:
-        print(f"Error scraping {url}: {e}")
+        print(f"Error scraping {base_url}: {e}")
         return []
 
 # Function to extract article content
@@ -44,11 +52,14 @@ data = []
 for source, bias in news_sources.items():
     print(f"Scraping: {source}")
     article_links = get_article_links(source)
+    
     for link in article_links:
+        print(f"Fetching: {link}")
         content = extract_article_content(link)
+        
         if content:
             data.append({"source": source, "bias": bias, "url": link, "content": content})
-        time.sleep(1)  
+        time.sleep(1)  # Rate limiting to avoid bans
 
 # Save dataset
 df = pd.DataFrame(data)
