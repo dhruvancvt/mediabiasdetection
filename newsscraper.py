@@ -44,6 +44,7 @@ def get_article_links(base_url):
 
         return list(links)[:5]  # Limit to first 5 articles
     except Exception as e:
+        
         print(f"Error scraping {base_url}: {e}")
         return []
 
